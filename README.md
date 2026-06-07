@@ -4,7 +4,7 @@ An institutional-grade, data-driven financial analytics platform designed to syn
 
 Developed as an engineering-focused solution to decouple retail market noise from actual financial health indicators.
 
-🚀 **[Live Web Application Link](PASTE_YOUR_STREAMLIT_DROP_LINK_HERE)**
+🚀 **[Live Web Application Link](https://multi-modal-ai-investment-terminal.streamlit.app)**
 
 ---
 
