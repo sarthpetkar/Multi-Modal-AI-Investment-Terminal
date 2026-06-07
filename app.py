@@ -1,7 +1,3 @@
-#---from ml_engine import run_ml_pipeline---
-#---from risk_engine import run_monte_carlo---
-#---from ai_engine import generate_quant_response---
-#---from valuation_engine import calculate_valuation_metrics, calculate_dupont_analysis ---
 
 import streamlit as st
 import matplotlib.pyplot as plt
@@ -1631,7 +1627,6 @@ if app_mode == "🔍 Single Stock Terminal":
                     except Exception as e:
                         st.error(f"⚠️ Could not render shareholding visuals: {e}")
                                 
-
                 
                 # --- THE INTENT FIX: TAB 6 IS NOW FULLY OUTSIDE TAB 6 ---
                 with tab6:
@@ -1830,7 +1825,8 @@ if app_mode == "🔍 Single Stock Terminal":
                             
                             # THE MAGIC: Hand values to your dynamic backend engine model call loop
                             full_response = generate_quant_response(
-                                api_key="YOUR_API_KEY_HERE", # Or pull dynamically from st.secrets["GEMINI_KEY"]
+                                # FIXED: Safe production-grade routing using Streamlit's runtime secret injection
+                                api_key = st.secrets["GEMINI_API_KEY"],
                                 ticker_input=ticker_input,
                                 info=info,
                                 valuation_dict=valuation_dict,
@@ -1841,7 +1837,6 @@ if app_mode == "🔍 Single Stock Terminal":
                             
                             message_placeholder.markdown(full_response)
                             st.session_state.messages.append({"role": "assistant", "content": full_response})                                
-
 
                 
                 # --- TAB 8: MULTI-MODAL ENSEMBLE ML PREDICTOR ---
