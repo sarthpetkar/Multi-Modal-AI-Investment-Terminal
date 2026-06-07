@@ -1270,18 +1270,60 @@ if app_mode == "🔍 Single Stock Terminal":
                         st.write("Return on Capital Employed (ROCE) tracks how efficiently the company uses debt and equity to generate operating profit.")
 
                         try:
-                            # FIXED: Catching the 5th unpacked value cleanly
-                            roce_years, roce_values, ebit_values, capital_values, _ = calculate_historical_roce(live_financials, live_balance_sheet)
+                            # 1. Fetch calculations from the engine
+                            roce_years, roce_values, ebit_values, capital_values, status_msg = calculate_historical_roce(live_financials, live_balance_sheet)
                             
-                            # Your Plotly chart rendering code block follows safely here...
-                            
-                        except ValueError:
-                            # Fallback if your other stocks return exactly 4 values instead of 5
-                            roce_years, roce_values, ebit_values, capital_values = calculate_historical_roce(live_financials, live_balance_sheet)
-                        # (Your Plotly fig_roce line chart logic can safely reside undisturbed right here...)
-                        
+                            # 2. VALIDATION LAYER: Check if we have valid arrays before plotting
+                            if len(roce_years) > 0 and len(roce_values) > 0:
+                                
+                                import plotly.graph_objects as go
+                                
+                                fig_roce = go.Figure()
+                                
+                                # Add the primary ROCE Line Chart
+                                fig_roce.add_trace(go.Scatter(
+                                    x=roce_years,
+                                    y=roce_values,
+                                    mode='lines+markers',
+                                    name='ROCE (%)',
+                                    line=dict(color='#09DDF5', width=3),
+                                    marker=dict(size=8, color='#FF007F'),
+                                    hovertemplate='Year: %{x}<br>ROCE: %{y:.2f}%<extra></extra>'
+                                ))
+                                
+                                fig_roce.update_layout(
+                                    height=400,
+                                    margin=dict(l=40, r=20, t=20, b=40),
+                                    plot_bgcolor='rgba(0,0,0,0)',
+                                    paper_bgcolor='rgba(0,0,0,0)',
+                                    xaxis=dict(showgrid=True, gridcolor='rgba(0, 0, 0, 0.05)', tickfont=dict(color='#2C3E50')),
+                                    yaxis=dict(
+                                        showgrid=True, 
+                                        gridcolor='rgba(0, 0, 0, 0.08)', 
+                                        tickfont=dict(color='#2C3E50'),
+                                        ticksuffix="%"
+                                    )
+                                )
+                                
+                                # Render the chart cleanly using dynamic container layout width
+                                st.plotly_chart(fig_roce, use_container_width=True)
+                                
+                                # Quick descriptive analytical context block underneath
+                                latest_roce = roce_values[-1]
+                                if latest_roce > 20:
+                                    st.success(f"🔥 **High Capital Efficiency:** The latest tracked ROCE sits at a dominant **{latest_roce:.1f}%**, showcasing a clear competitive economic moat.")
+                                else:
+                                    st.info(f"📊 **Moderate Capital Velocity:** The company generates a capital reinvestment return of **{latest_roce:.1f}%**.")
+                                    
+                            else:
+                                # FIXED: Aligned perfectly with the parent 'if len(roce_years) > 0' condition
+                                st.warning("⚠️ Historical statement matrices for this ticker do not contain overlapping annual Operating Income and Capital Employed timelines to model ROCE vectors.")
+                                
+                        except Exception as chart_err:
+                            st.warning(f"⚠️ Unable to structure Plotly ROCE tracking bounds: {chart_err}")
+
                     except Exception as tab3_err:
-                        st.error(f"⚠️ Fundamentals Tab encountered an unexpected execution error: {tab3_err}")
+                        st.error(f"⚠️ Fundamentals Tab encountered an unexpected execution error: {tab3_err}")           
 
 
 
